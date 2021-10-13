@@ -10,9 +10,9 @@ import Foundation
 struct Constants {
     
     static let appName = "Movies App"
-    static let APIKEY = ""
+    static let APIKEY = "112e4a60455675fcc2e069b755f8e1bf"
     
     struct Cells {
-        static let homeCell = "HomeCell"
+        static let movieCell = "MovieCell"
     }
 }
