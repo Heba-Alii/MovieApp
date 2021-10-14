@@ -12,9 +12,9 @@ struct MovieData {
     let imgURL: String?
     let title: String
     let subTitle: String?
-    let rate: Double?
+    let rate: String
     let genre: String?
     let runtime: String?
-    let date: String?
+    let date: String
     let description: String?
 }

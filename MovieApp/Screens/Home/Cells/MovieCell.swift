@@ -34,12 +34,10 @@ class MovieCell: UITableViewCell {
         MovieImage.sd_setImage(with: URL(string: movieData.imgURL ?? "https://via.placeholder.com/150"), completed: nil)
         MovieTitle.text = movieData.title
         MovieSubTitle.text = movieData.subTitle
-        if(movieData.rate != nil){
-            MovieRate.text = String(describing: movieData.rate)
-        }
-        else{
-            MovieRate.text = "N/A"
-        }
+        
+        MovieRate.text = String(describing: movieData.rate)
+        
+        MovieType.text = ""
         
         if(movieData.genre != nil){
             MovieType.text = String(describing: movieData.genre) + " | "
@@ -49,9 +47,7 @@ class MovieCell: UITableViewCell {
             MovieType.text! += String(describing: movieData.runtime) + " | "
         }
         
-        if(movieData.date != nil){
-            MovieType.text! += String(describing: movieData.date)
-        }
+        MovieType.text! += movieData.date
             
         if let description =  movieData.description {
             MovieDescription.text = description

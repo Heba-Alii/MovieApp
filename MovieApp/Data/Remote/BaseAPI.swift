@@ -10,9 +10,9 @@ import Alamofire
 
 class BaseAPI {
     
-    func fetchData<T: Decodable>(url: String, responseClass: T.Type , completion:@escaping (Result<T?, NSError>) -> Void) {
+    static func fetchData<T: Decodable>(url: String, responseClass: T.Type , completion:@escaping (Result<T?, NSError>) -> Void) {
         
-        if(!self.isConnectedToInternet()){
+        if(!isConnectedToInternet()){
             return completion(.failure(NSError(domain: url, code: -1, userInfo: [NSLocalizedDescriptionKey: "No Internet Connection"])))
         }
         
@@ -29,13 +29,13 @@ class BaseAPI {
                     completion(.failure(error))
                     return }
                 completion(.success(responseObj))
-            }else{
+            } else {
                 return completion(.failure(NSError(domain: url, code: 0, userInfo: [NSLocalizedDescriptionKey: "Can not reach the data please try again later!"])))
             }
         }
     }
     
-    func isConnectedToInternet() -> Bool {
+    static func isConnectedToInternet() -> Bool {
         return NetworkReachabilityManager()?.isReachable ?? false
     }
 }
