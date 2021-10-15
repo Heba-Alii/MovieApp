@@ -12,6 +12,7 @@ struct Constants {
     static let appName = "Movies App"
     static let BASE_URL = "https://api.themoviedb.org/"
     static let SEARCH_MOVIES = "3/search/movie"
+    static let DETAILS_MOVIE = "3/movie/"
     static let APIKEY = "112e4a60455675fcc2e069b755f8e1bf"
     static let IMAGE_BASE = "https://image.tmdb.org/t/p/original"
     

@@ -31,7 +31,7 @@ class MovieCell: UITableViewCell {
     
     func configureCell(movieData: MovieData)
     {
-        MovieImage.sd_setImage(with: URL(string: movieData.imgURL ?? "https://via.placeholder.com/150"), completed: nil)
+        MovieImage.sd_setImage(with: URL(string: movieData.imgURL), completed: nil)
         MovieTitle.text = movieData.title
         MovieSubTitle.text = movieData.subTitle
         
@@ -40,11 +40,11 @@ class MovieCell: UITableViewCell {
         MovieType.text = ""
         
         if(movieData.genre != nil){
-            MovieType.text = String(describing: movieData.genre) + " | "
+            MovieType.text = String(describing: movieData.genre!) + " | "
         }
         
         if(movieData.runtime != nil){
-            MovieType.text! += String(describing: movieData.runtime) + " | "
+            MovieType.text! += String(describing: movieData.runtime!) + " | "
         }
         
         MovieType.text! += movieData.date

@@ -9,22 +9,26 @@ import Foundation
 
 class HomePresenter{
     
-    private var moviesData: [MovieData] = [MovieData]()
-    private var homeVC: HomeVC?
+    var moviesData: [MovieData] = [MovieData]() // 20
+    var moviesFullDetails: [Movie] = [Movie]()  // 20
+    
+    private weak var homeVC: HomeVC?
     
     init(home : HomeVC){
         homeVC = home
     }
     
-    func searchMovie(search : String){
+    func searchMovie(search : String?){
+        guard let search = search else { return }
         
-        let url = URLBuilder(withBaseURL: Constants.BASE_URL , Constants.SEARCH_MOVIES)
+        homeVC?.showIndicator()
+        let url: String = URLBuilder(withBaseURL: Constants.BASE_URL , Constants.SEARCH_MOVIES)
             .addQueryItem(key: Constants.API_Parms_KEYS.api_key, value: Constants.APIKEY)
             .addQueryItem(key: Constants.API_Parms_KEYS.query, value: search)
             .addQueryItem(key: Constants.API_Parms_KEYS.page, value: 1)
-            .build()
+            .build().absoluteString
         
-        BaseAPI.fetchData(url: String(describing: url.absoluteURL), responseClass: SearchResult.self) { [weak self] (response) in
+        BaseAPI.fetchData(url: url, responseClass: SearchResult.self) { [weak self] (response) in
             guard let self = self else { return }
             switch(response){
                 
@@ -38,18 +42,48 @@ class HomePresenter{
                     self.moviesData.append(formattedMovie)
                 }
                 
-                self.homeVC?.searchedMovies = self.moviesData
-                self.homeVC?.tableDetails.reloadData()
+                for movieData in self.moviesData {
+                    self.getMovieFullDetails(id: movieData.id, movieData: movieData)
+                }
                 
             case .failure(let error):
-                print(error.localizedDescription)
+                self.homeVC?.onFailure(error)
             }
         }
     }
     
+    func getMovieFullDetails(id: Int, movieData: MovieData){
+        let url: String = URLBuilder(withBaseURL: Constants.BASE_URL, Constants.DETAILS_MOVIE + String(describing: id)).addQueryItem(key: Constants.API_Parms_KEYS.api_key, value: Constants.APIKEY).build().absoluteString
+        
+        BaseAPI.fetchData(url: url, responseClass: Movie.self) { result in
+            switch(result){
+            case.success(let movie):
+                guard let movie = movie else { return }
+                
+                if let runtime = movie.runtime {
+                    movieData.runtime = String(describing: runtime)
+                }
+                
+                if let generes = movie.genres, !generes.isEmpty {
+                    movieData.genre = generes[0].name
+                }
+                
+                self.moviesFullDetails.append(movie)
+                
+                if(self.moviesData.count == self.moviesFullDetails.count) {
+                    self.homeVC?.onSuccess()
+                    self.homeVC?.hideIndicator()
+                }
+                
+            case.failure(let error):
+                self.homeVC?.onFailure(error)
+                self.homeVC?.hideIndicator()
+            }
+        }
+    }
     
     private func formatMovie(movie: Movie) -> MovieData{
-        var imgURL: String?
+        var imgURL: String!
         var title: String = ""
         var subTitle: String = ""
         var rate: String = "N/A"
@@ -57,6 +91,8 @@ class HomePresenter{
         
         if let posterpath = movie.poster_path {
             imgURL = Constants.IMAGE_BASE + posterpath
+        } else {
+            imgURL = "https://via.placeholder.com/150"
         }
         
         let title_subtitle : [String] = movie.title.components(separatedBy: ":")
@@ -64,7 +100,7 @@ class HomePresenter{
         title = title_subtitle[0]
         
         if(title_subtitle.count > 1){
-            title += ": "
+            title += ":"
             subTitle = title_subtitle[1]
         }
         
@@ -82,7 +118,7 @@ class HomePresenter{
             } 
         }
         
-        let movieData = MovieData(imgURL: imgURL, title: title, subTitle: subTitle, rate: rate, genre: nil, runtime: nil, date: releaseDate, description: movie.overview)
+        let movieData = MovieData(id: movie.id, imgURL: imgURL, title: title, subTitle: subTitle, rate: rate, genre: nil, runtime: nil, date: releaseDate, description: movie.overview)
         
         return movieData
     }

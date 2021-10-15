@@ -7,14 +7,27 @@
 
 import Foundation
 
-struct MovieData {
+class MovieData {
     
-    let imgURL: String?
+    let id: Int
+    let imgURL: String
     let title: String
     let subTitle: String?
     let rate: String
-    let genre: String?
-    let runtime: String?
+    var genre: String?
+    var runtime: String?
     let date: String
     let description: String?
+    
+    init(id: Int, imgURL: String, title: String, subTitle: String?, rate: String, genre: String?, runtime: String?, date: String, description: String?){
+        self.id = id
+        self.imgURL = imgURL
+        self.title = title
+        self.subTitle = subTitle
+        self.rate = rate
+        self.genre = genre
+        self.runtime = runtime
+        self.date = date
+        self.description = description
+    }
 }
