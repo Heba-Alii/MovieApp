@@ -45,6 +45,10 @@ class DetailsVC: UIViewController {
         
         detailsData = presenter.formatMovie(movie: movieFullDetails)
         showData(details: detailsData)
+        
+        let singleTap = UITapGestureRecognizer(target: self, action: #selector(tapDetected))
+        imgDetails.isUserInteractionEnabled = true
+        imgDetails.addGestureRecognizer(singleTap)
     }
     
     private func showData(details: DetailsData){
@@ -75,6 +79,12 @@ class DetailsVC: UIViewController {
     
     @IBAction func btnBack(_ sender: UIButton) {
         self.navigationController?.popViewController(animated: true)
+    }
+    
+    @objc func tapDetected() {
+        let fullimageView = self.storyboard?.instantiateViewController(withIdentifier: "FullImageVC") as! FullImageVC
+        fullimageView.img = detailsData.imgURL
+        self.navigationController?.pushViewController(fullimageView, animated: true)
     }
 }
 
