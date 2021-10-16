@@ -21,6 +21,9 @@ class HomePresenter{
     func searchMovie(search : String?){
         guard let search = search else { return }
         
+        moviesData.removeAll()
+        moviesFullDetails.removeAll()
+        
         homeVC?.showIndicator()
         let url: String = URLBuilder(withBaseURL: Constants.BASE_URL , Constants.SEARCH_MOVIES)
             .addQueryItem(key: Constants.API_Parms_KEYS.api_key, value: Constants.APIKEY)
@@ -53,7 +56,10 @@ class HomePresenter{
     }
     
     func getMovieFullDetails(id: Int, movieData: MovieData){
-        let url: String = URLBuilder(withBaseURL: Constants.BASE_URL, Constants.DETAILS_MOVIE + String(describing: id)).addQueryItem(key: Constants.API_Parms_KEYS.api_key, value: Constants.APIKEY).build().absoluteString
+        let url: String = URLBuilder(withBaseURL: Constants.BASE_URL, Constants.DETAILS_MOVIE + String(describing: id))
+            .addQueryItem(key: Constants.API_Parms_KEYS.api_key, value: Constants.APIKEY)
+            .addQueryItem(key: Constants.API_Parms_KEYS.append_to_response, value: Constants.APPEND_RESPONSE)
+            .build().absoluteString
         
         BaseAPI.fetchData(url: url, responseClass: Movie.self) { result in
             switch(result){
@@ -61,7 +67,16 @@ class HomePresenter{
                 guard let movie = movie else { return }
                 
                 if let runtime = movie.runtime {
-                    movieData.runtime = String(describing: runtime)
+                    let h = runtime / 60
+                    let m = runtime - (h * 60)
+                    
+                    if(h == 0 && m == 0){
+                        movieData.runtime = nil
+                    } else if(h == 0){
+                        movieData.runtime = "\(m)m"
+                    } else {
+                        movieData.runtime = "\(h)h \(m)m"
+                    }
                 }
                 
                 if let generes = movie.genres, !generes.isEmpty {
@@ -88,6 +103,7 @@ class HomePresenter{
         var subTitle: String = ""
         var rate: String = "N/A"
         var releaseDate: String = "N/A"
+        var overview: String = ""
         
         if let posterpath = movie.poster_path {
             imgURL = Constants.IMAGE_BASE + posterpath
@@ -118,7 +134,11 @@ class HomePresenter{
             } 
         }
         
-        let movieData = MovieData(id: movie.id, imgURL: imgURL, title: title, subTitle: subTitle, rate: rate, genre: nil, runtime: nil, date: releaseDate, description: movie.overview)
+        if let simpleOverview = movie.overview?.components(separatedBy: ".")[0]{
+            overview = simpleOverview + "."
+        }
+        
+        let movieData = MovieData(id: movie.id, imgURL: imgURL, title: title, subTitle: subTitle, rate: rate, genre: nil, runtime: nil, date: releaseDate, description: overview)
         
         return movieData
     }

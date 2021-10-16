@@ -10,14 +10,26 @@ import Foundation
 class MovieData {
     
     let id: Int
-    let imgURL: String
-    let title: String
-    let subTitle: String?
-    let rate: String
+    var imgURL: String
+    var title: String
+    var subTitle: String?
+    var rate: String
     var genre: String?
     var runtime: String?
-    let date: String
-    let description: String?
+    var date: String
+    var description: String?
+    
+    init(){
+        self.id = 0
+        self.imgURL = ""
+        self.title = ""
+        self.subTitle = nil
+        self.rate = ""
+        self.genre = nil
+        self.runtime = nil
+        self.date = ""
+        self.description = nil
+    }
     
     init(id: Int, imgURL: String, title: String, subTitle: String?, rate: String, genre: String?, runtime: String?, date: String, description: String?){
         self.id = id
